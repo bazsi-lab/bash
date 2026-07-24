@@ -149,9 +149,22 @@ $disk_info
 Package Lists:
 "
 
+
+# Loop through package data and organize
 for key in "${!package_data[@]}"; do
-    output+="\nPackage list for $key:\n"
-    output+="${package_data[$key]}\n"
+    # Extract package manager name from key
+    pm_name="${key%%_*}"  # everything before the underscore
+    # Add section header
+    output+="\n# $pm_name packages\n\n"
+    # Add packages as list
+    while IFS= read -r line; do
+        # Skip empty lines
+        if [ -n "$line" ]; then
+            output+="- $line\n"
+        fi
+    done < <(echo "${package_data[$key]}")
+    # Add separator line
+    output+="\n---\n"
 done
 
 # Save to file
